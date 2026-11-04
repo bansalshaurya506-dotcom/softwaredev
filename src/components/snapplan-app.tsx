@@ -3,16 +3,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import {
-  ArrowRight, BookOpen, CalendarDays, Camera, Check, CheckCircle2, ChevronDown,
+  ArrowRight, BookOpen, CalendarDays, Camera, Check, CheckCircle2,
   ChevronRight, Clock3, ExternalLink, FileText, Filter, Focus, GraduationCap,
   LayoutDashboard, Lightbulb, Menu, MoreHorizontal, Pencil, Play,
-  Plus, Search, Settings2, Sparkles, Target, Timer, Trash2, UploadCloud,
+  Plus, Search, Settings2, Sparkles, Timer, Trash2, UploadCloud,
   WandSparkles, X, AlertTriangle, RotateCcw, Save, Bell
 } from "lucide-react"
 import { SnapPlanBrand } from "@/components/branding/snapplan-brand"
 import { AnimatedSnapPlanLogo } from "@/components/branding/animated-snapplan-logo"
+import { StudyCompass, ReflectionLab, ThemePicker, type SnapPlanTheme } from "@/components/study-cockpit"
+import { StudyCommandMenu, type CommandAction } from "@/components/study-command-menu"
 import {
-  type Assignment, type Priority, type StudyBlock, dateKey, daysUntil, dueLabel,
+  type Assignment, type Priority, dateKey, daysUntil, dueLabel,
   generateStudyPlan, minutesLabel, prioritySort, sampleAssignments
 } from "@/lib/planner"
 
@@ -92,6 +94,7 @@ export default function SnapPlanApp() {
   const [page, setPage] = useState<Page>("Dashboard")
   const [tasks, setTasks] = useState<Assignment[]>([])
   const [loaded, setLoaded] = useState(false)
+  const [theme, setTheme] = useState<SnapPlanTheme>("aurora")
   const [showModal, setShowModal] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [draft, setDraft] = useState<AssignmentDraft>(emptyDraft)
@@ -127,6 +130,16 @@ export default function SnapPlanApp() {
     setLoaded(true)
   }, [])
   useEffect(() => { if (loaded) localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks)) }, [tasks, loaded])
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("snapplan-v1-theme")
+      if (stored === "aurora" || stored === "ocean" || stored === "sunset") setTheme(stored)
+    } catch { /* Private browsing may disable storage. */ }
+  }, [])
+  useEffect(() => {
+    if (!loaded) return
+    try { localStorage.setItem("snapplan-v1-theme", theme) } catch { /* Keep theme in React state. */ }
+  }, [theme, loaded])
   useEffect(() => {
     if (!focusRunning) return
     const timer = window.setInterval(() => setFocusSeconds((seconds) => {
@@ -215,6 +228,23 @@ export default function SnapPlanApp() {
     } finally { setVideoLoading(false) }
   }, [])
   const beginResourceSearch = (topic: string) => { setResourceTopic(topic); navigate("Resources"); void lookupVideos(topic) }
+  const startMission = (id: string) => {
+    setFocusTask(id)
+    setFocusSeconds(25 * 60)
+    setFocusRunning(false)
+    navigate("Focus mode")
+  }
+  const recordActualTime = (id: string, actualMinutes: number) => {
+    setTasks((previous) => previous.map((task) => task.id === id ? { ...task, actualMinutes } : task))
+  }
+  const quickActions: CommandAction[] = [
+    { id: "add", label: "Add assignment", description: "Capture a new task by hand", keywords: "new homework", icon: "plus", run: openNew },
+    { id: "scan", label: "Scan homework", description: "Upload a worksheet or rubric", keywords: "camera photo", icon: "camera", run: () => navigate("Scan assignment") },
+    { id: "plan", label: "Build study plan", description: "Create your next study blocks", keywords: "schedule time", icon: "calendar", run: () => navigate("Study planner") },
+    { id: "focus", label: "Start focus mode", description: "Set a focus timer and begin", keywords: "timer", icon: "focus", run: () => navigate("Focus mode") },
+    { id: "resources", label: "Find study resources", description: "Look for educational videos", keywords: "tutorial youtube", icon: "book", run: () => navigate("Resources") },
+    { id: "settings", label: "Change color theme", description: "Customize your study atmosphere", keywords: "colors appearance", icon: "settings", run: () => navigate("Settings") },
+  ]
 
   const fieldForm = (value: AssignmentDraft, setField: <K extends keyof AssignmentDraft>(field: K, val: AssignmentDraft[K]) => void) => <div className="grid gap-4 sm:grid-cols-2">
     <label className="sm:col-span-2"><span className="mb-1.5 block text-sm font-semibold text-slate-700">Assignment title *</span><input required className="input-field" value={value.title} onChange={(e) => setField("title", e.target.value)} placeholder="e.g. Chain rule worksheet"/></label>
@@ -227,7 +257,7 @@ export default function SnapPlanApp() {
 
   if (!loaded) return <div className="flex min-h-screen items-center justify-center text-indigo-600"><span className="font-bold">Loading SnapPlan...</span></div>
 
-  return <div className="flex min-h-screen bg-[#f5f7fc]">
+  return <div className="snapplan-shell flex min-h-screen" data-snapplan-theme={theme}>
     {menuOpen && <button aria-label="Close navigation" type="button" className="fixed inset-0 z-30 bg-slate-900/30 lg:hidden" onClick={() => setMenuOpen(false)}/>}
     <aside className={"fixed inset-y-0 left-0 z-40 flex w-[258px] flex-col border-r border-slate-100 bg-white px-4 py-6 transition-transform lg:sticky lg:top-0 lg:h-screen " + (menuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0")}>
       <div className="mb-9 flex items-center justify-between px-3"><SnapPlanBrand/><button aria-label="Close menu" type="button" className="lg:hidden" onClick={() => setMenuOpen(false)}><X size={19}/></button></div>
@@ -249,7 +279,7 @@ export default function SnapPlanApp() {
     <div className="min-w-0 flex-1">
       <header className="sticky top-0 z-20 flex h-[74px] items-center justify-between border-b border-slate-100 bg-white/95 px-5 backdrop-blur sm:px-9">
         <div className="flex items-center gap-4"><button type="button" className="rounded-lg p-1 text-slate-500 lg:hidden" onClick={() => setMenuOpen(true)} aria-label="Open menu"><Menu size={23}/></button><div className="text-sm text-slate-400"><span className="hidden sm:inline">Workspace</span><ChevronRight className="mx-1 hidden sm:inline" size={13}/><span className="font-semibold text-slate-800">{page}</span></div></div>
-        <div className="flex items-center gap-3"><Badge tint="violet"><Sparkles size={12} className="mr-1"/> Demo workspace</Badge><Link href="/logo-demo" title="View animated logo" className="rounded-xl p-2 text-slate-500 hover:bg-slate-100"><Sparkles size={18}/></Link><button type="button" aria-label="Go to assignments" title="Your tasks" onClick={() => navigate("Assignments")} className="relative rounded-xl p-2 text-slate-500 hover:bg-slate-100"><Bell size={19}/>{urgent.length > 0 && <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-rose-500"/>}</button></div>
+        <div className="flex items-center gap-2 sm:gap-3"><StudyCommandMenu actions={quickActions}/><span className="hidden xl:inline-flex"><Badge tint="violet"><Sparkles size={12} className="mr-1"/> Demo workspace</Badge></span><Link href="/logo-demo" title="View animated logo" className="rounded-xl p-2 text-slate-500 hover:bg-slate-100"><Sparkles size={18}/></Link><button type="button" aria-label="Go to assignments" title="Your tasks" onClick={() => navigate("Assignments")} className="relative rounded-xl p-2 text-slate-500 hover:bg-slate-100"><Bell size={19}/>{urgent.length > 0 && <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-rose-500"/>}</button></div>
       </header>
       <main className="mx-auto max-w-[1250px] px-5 py-8 sm:px-9 sm:py-10">
         {page === "Dashboard" && <div className="reveal">
@@ -259,6 +289,9 @@ export default function SnapPlanApp() {
             <StatCard label="Due very soon" value={String(urgent.length)} sub="Today, tomorrow or overdue" icon={CalendarDays} tint="amber"/>
             <StatCard label="Study workload" value={minutesLabel(minutesRemaining)} sub="Estimated time remaining" icon={Clock3} tint="sky"/>
             <StatCard label="Completed" value={progress + "%"} sub={completed + " of " + tasks.length + " assignments"} icon={CheckCircle2} tint="emerald"/>
+          </div>
+          <div className="mb-7">
+            <StudyCompass tasks={tasks} onFocus={startMission} onPlan={() => navigate("Study planner")} onScan={() => navigate("Scan assignment")} onResource={beginResourceSearch}/>
           </div>
           <div className="grid gap-6 xl:grid-cols-[1.65fr_1fr]">
             <section className="surface-card p-5 sm:p-6"><div className="mb-3 flex items-center justify-between"><div><h2 className="text-lg font-extrabold text-slate-800">Your priorities</h2><p className="mt-1 text-xs text-slate-400">Sorted by urgency and importance</p></div><button type="button" onClick={() => navigate("Assignments")} className="flex items-center gap-1 text-xs font-bold text-indigo-600">View all <ArrowRight size={14}/></button></div>
@@ -279,6 +312,7 @@ export default function SnapPlanApp() {
             { title: "Study smarter", sub: "Find videos for your current topics", icon: BookOpen, target: "Resources" as Page },
             { title: "Find your focus", sub: "Start a distraction-free work session", icon: Focus, target: "Focus mode" as Page },
           ].map(({title,sub,icon:Icon,target})=><button type="button" key={title} onClick={() => navigate(target)} className="surface-card flex items-center gap-3 p-5 text-left transition hover:border-indigo-200 hover:shadow-md"><div className="rounded-xl bg-indigo-50 p-3 text-indigo-600"><Icon size={21}/></div><div className="flex-1"><div className="font-bold">{title}</div><p className="mt-1 text-xs text-slate-400">{sub}</p></div><ArrowRight size={17} className="text-slate-400"/></button>)}</div>
+          <div className="mt-6"><ReflectionLab tasks={tasks} onRecord={recordActualTime}/></div>
         </div>}
 
         {page === "Assignments" && <div className="reveal">
@@ -367,6 +401,7 @@ export default function SnapPlanApp() {
             ["Live educational video matches", "Needs YOUTUBE_API_KEY"],
             ["Account sign-in and cloud sync", "Planned for next milestone"]
           ].map(([feature,status])=><div key={feature} className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3 last:border-0"><span>{feature}</span><Badge tint={status.startsWith("Working") || status.startsWith("Available") ? "green" : "amber"}>{status}</Badge></div>)}</div></section>
+          <ThemePicker value={theme} onChange={setTheme}/>
           <Link href="/logo-demo" className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-indigo-600">Watch the animated logo <ArrowRight size={16}/></Link>
         </div>}
       </main>
