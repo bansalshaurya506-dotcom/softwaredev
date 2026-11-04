@@ -1,0 +1,18 @@
+@import "tailwindcss";
+:root { color-scheme: light; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #f5f7fc; color: #17233a; font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: not-allowed; opacity: .55; }
+:focus-visible { outline: 3px solid #8886fe; outline-offset: 2px; }
+.surface-card { background: white; border: 1px solid #edf0f6; border-radius: 22px; box-shadow: 0 7px 24px rgba(25,35,60,.035); }
+.input-field { width:100%; border: 1px solid #dfe4ef; border-radius: 12px; background: white; padding: 10px 12px; outline: none; transition: border .15s; }
+.input-field:focus { border-color: #7172ec; box-shadow: 0 0 0 3px #7172ec16; }
+.btn-primary { background: #575de8; color:white; border-radius: 12px; padding: 11px 17px; font-weight: 700; transition: background .15s, transform .15s; }
+.btn-primary:hover { background: #474acf; transform: translateY(-1px); }
+.btn-soft { background: #f0f1ff; color: #4f51bc; border-radius: 12px; padding: 10px 14px; font-weight: 650; }
+.btn-soft:hover { background: #e6e8ff; }
+@keyframes floatin { from { opacity:0; transform: translateY(8px) } to { opacity:1; transform:translateY(0) } }
+.reveal { animation: floatin .35s ease-out both; }
+@media (prefers-reduced-motion: reduce) { .reveal { animation: none } .btn-primary { transition: none } }
