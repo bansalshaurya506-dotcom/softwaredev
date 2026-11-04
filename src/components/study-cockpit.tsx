@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import { ArrowRight, BrainCircuit, CalendarClock, CheckCircle2, Clock3, Compass, Lightbulb, Play, ScanLine, Sparkles, TimerReset, WandSparkles } from "lucide-react"
 import { type Assignment, daysUntil, dueLabel, minutesLabel, prioritySort } from "@/lib/planner"
 
@@ -49,7 +49,7 @@ export function StudyCompass({ tasks, onFocus, onPlan, onScan, onResource }: {
       <div className="sp-compass-main">
         <div className="sp-compass-eyebrow"><Compass size={15}/> YOUR STUDY COMPASS <span className="sp-pulse-dot"/></div>
         <h2 className="sp-compass-heading">One clear next step.<span> More room to think.</span></h2>
-        <p className="sp-compass-subtitle">SnapPlan doesn't just list your work. It explains where to begin, then helps you practice choosing what matters.</p>
+        <p className="sp-compass-subtitle">SnapPlan doesn&apos;t just list your work. It explains where to begin, then helps you practice choosing what matters.</p>
         <div className="sp-lens-wrap" aria-label="Choose study strategy">
           {LENSES.map((entry) => (
             <button key={entry.key} type="button" aria-pressed={lens === entry.key}
@@ -105,7 +105,6 @@ export function ReflectionLab({ tasks, onRecord }: {
   const selected = finished.find((task) => task.id === selectedId) || finished[0]
   const [minutes, setMinutes] = useState("")
   const [feedback, setFeedback] = useState("")
-  useEffect(() => { setMinutes(selected?.actualMinutes ? String(selected.actualMinutes) : ""); setFeedback("") }, [selected?.id, selected?.actualMinutes])
   const recorded = finished.filter((task) => typeof task.actualMinutes === "number" && task.actualMinutes > 0)
   const averageDifference = recorded.length ? Math.round(recorded.reduce((sum, task) => sum + Math.abs((task.actualMinutes || 0) - task.estimatedMinutes), 0) / recorded.length) : 0
   const save = () => {
@@ -127,7 +126,7 @@ export function ReflectionLab({ tasks, onRecord }: {
         <div className="sp-reflection-form">
           {selected ? <>
             <label className="block text-sm font-semibold text-slate-700">Completed assignment
-              <select className="input-field mt-2" value={selected.id} onChange={(event) => setSelectedId(event.target.value)}>{finished.map((task) => <option key={task.id} value={task.id}>{task.title}</option>)}</select>
+              <select className="input-field mt-2" value={selected.id} onChange={(event) => { const nextId = event.target.value; const nextTask = finished.find((task) => task.id === nextId); setSelectedId(nextId); setMinutes(nextTask?.actualMinutes ? String(nextTask.actualMinutes) : ""); setFeedback("") }}>{finished.map((task) => <option key={task.id} value={task.id}>{task.title}</option>)}</select>
             </label>
             <div className="mt-4 flex flex-wrap items-end gap-3">
               <label className="min-w-32 flex-1 text-sm font-semibold text-slate-700">Actual time (minutes)

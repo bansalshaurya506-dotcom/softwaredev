@@ -29,6 +29,8 @@ export function StudyCommandMenu({ actions }: { actions: CommandAction[] }) {
     const onKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault()
+        setQuery("")
+        setActive(0)
         setOpen((previous) => !previous)
       }
       if (event.key === "Escape") setOpen(false)
@@ -38,11 +40,7 @@ export function StudyCommandMenu({ actions }: { actions: CommandAction[] }) {
   }, [])
 
   useEffect(() => {
-    if (open) {
-      setQuery("")
-      setActive(0)
-      requestAnimationFrame(() => inputRef.current?.focus())
-    }
+    if (open) requestAnimationFrame(() => inputRef.current?.focus())
   }, [open])
 
   const choose = (action: CommandAction) => {
@@ -51,7 +49,7 @@ export function StudyCommandMenu({ actions }: { actions: CommandAction[] }) {
   }
 
   return <>
-    <button type="button" className="sp-command-trigger" onClick={() => setOpen(true)} aria-haspopup="dialog" aria-label="Open quick actions">
+    <button type="button" className="sp-command-trigger" onClick={() => { setQuery(""); setActive(0); setOpen(true) }} aria-haspopup="dialog" aria-label="Open quick actions">
       <Search size={16}/><span className="hidden sm:inline">Search or jump to...</span>
       <span className="sm:hidden">Quick actions</span>
       <kbd><Command size={10}/> K</kbd>

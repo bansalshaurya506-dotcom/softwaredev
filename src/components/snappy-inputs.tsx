@@ -43,7 +43,7 @@ export default function SnappyInputs({ onPoint, onPinch, onSnap, onVoice, onCapt
   const lastPinchRef = useRef(0)
   const lastSoundRef = useRef(0)
   const callbacks = useRef({ onPoint, onPinch, onSnap, onVoice, onCapture })
-  callbacks.current = { onPoint, onPinch, onSnap, onVoice, onCapture }
+  useEffect(() => { callbacks.current = { onPoint, onPinch, onSnap, onVoice, onCapture } }, [onPoint, onPinch, onSnap, onVoice, onCapture])
 
   const stopCamera = useCallback(() => {
     if (cameraRaf.current !== null) cancelAnimationFrame(cameraRaf.current)

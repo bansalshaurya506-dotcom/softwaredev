@@ -3,12 +3,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import {
-  ArrowDownRight, ArrowLeft, ArrowRight, BookOpen, Brain, Check, ChevronRight, CircleHelp, Clock3, Command, Fingerprint,
+  ArrowDownRight, ArrowLeft, ArrowRight, BookOpen, Brain, Check, ChevronRight, CircleHelp, Clock3, Fingerprint,
   GraduationCap, Hand, Headphones, Lightbulb, Menu, Mic2, MousePointer2, Orbit, Play, RotateCcw, ScanEye,
   Send, Sparkles, Volume2, WandSparkles, Zap,
 } from "lucide-react"
 import SnappyInputs from "@/components/snappy-inputs"
-import { LESSONS, findLesson, type Concept, type Lesson } from "@/lib/snappy-lessons"
+import { LESSONS, findLesson, type Lesson } from "@/lib/snappy-lessons"
 
 type Screen = "home" | "studio" | "library" | "progress"
 type Pointer = { x: number; y: number; visible: boolean }
@@ -128,11 +128,16 @@ export default function SnappyApp() {
   const exploredFor = useCallback((id:string)=>explored.filter((item)=>item.startsWith(id+":")).length,[explored])
 
   useEffect(()=>{
-    try {
-      const value = localStorage.getItem("snappy-learning-progress")
-      if (value) { const parsed:unknown=JSON.parse(value); if (Array.isArray(parsed)) setExplored(parsed.filter((v):v is string=>typeof v==="string")) }
-    } catch { /* local storage may be unavailable */ }
-    setLoaded(true)
+    queueMicrotask(() => {
+      try {
+        const value = localStorage.getItem("snappy-learning-progress")
+        if (value) {
+          const parsed:unknown = JSON.parse(value)
+          if (Array.isArray(parsed)) setExplored(parsed.filter((v):v is string=>typeof v==="string"))
+        }
+      } catch { /* local storage may be unavailable */ }
+      setLoaded(true)
+    })
   },[])
   useEffect(()=>{ if(loaded) try {localStorage.setItem("snappy-learning-progress",JSON.stringify(explored))} catch {/* no storage */} },[explored,loaded])
 
@@ -170,7 +175,6 @@ export default function SnappyApp() {
     if(value.includes("force") || value.includes("physics")){chooseLesson("forces");return}
     if(value.includes("explain")){setExplanation(chosen.detail);selectConcept(chosen.id);return}
     setVoiceNote('Try saying "next", "explain", "biology", "space", or "physics".')
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[chosen,nextConcept,selectConcept])
   const explainWithAI=async (prompt:string,image?:string)=>{
     if(!prompt.trim() && !image)return
@@ -199,7 +203,7 @@ export default function SnappyApp() {
     { icon:Mic2, title:"SAY IT", subtitle:"Learn out loud", text:"Use supported voice commands to explore topics and hear explanations."},
   ]
   const navItems:{id:Screen;label:string}[]=[{id:"home",label:"Discover"},{id:"studio",label:"Live studio"},{id:"library",label:"Explore topics"},{id:"progress",label:"My journey"}]
-  const currentLessonMap = useMemo(()=>Object.fromEntries(LESSONS.map((entry)=>[entry.id,exploredFor(entry.id)])),[explored,exploredFor])
+  const currentLessonMap = useMemo(()=>Object.fromEntries(LESSONS.map((entry)=>[entry.id,exploredFor(entry.id)])),[exploredFor])
 
   return <div className="sn-app">
     <div className="sn-page-glow" aria-hidden="true"/>
@@ -235,13 +239,13 @@ export default function SnappyApp() {
         </section>
         <section className="sn-quick-stats sn-reveal"><div><span className="sn-stat-number">04</span><span>Ways to interact</span></div><div><span className="sn-stat-number">03</span><span>Learning worlds</span></div><div><span className="sn-stat-number">09</span><span>Discoverable concepts</span></div><div><span className="sn-stat-icon"><ScanEye size={22}/></span><span>Made for exploration</span></div></section>
         <section className="sn-section sn-section-modes">
-          <div className="sn-section-head"><div><span className="sn-eyebrow"><Zap size={15}/> HANDS-ON BY DESIGN</span><h2>Don't just watch.<br/><span>Get involved.</span></h2></div><p>Four simple ways to turn a lesson into something memorable. Pick the interaction that works for you.</p></div>
+          <div className="sn-section-head"><div><span className="sn-eyebrow"><Zap size={15}/> HANDS-ON BY DESIGN</span><h2>Don&apos;t just watch.<br/><span>Get involved.</span></h2></div><p>Four simple ways to turn a lesson into something memorable. Pick the interaction that works for you.</p></div>
           <div className="sn-feature-grid">{showFeatureCards.map((feature,index)=>{const Icon=feature.icon;return <button key={feature.title} type="button" onClick={()=>go("studio")} className="sn-feature-card" style={{"--sn-delay":(index*.13)+"s"} as React.CSSProperties}><span className="sn-feature-number">0{index+1}</span><span className="sn-feature-icon"><Icon size={29} strokeWidth={1.6}/></span><h3>{feature.title}</h3><strong>{feature.subtitle}</strong><p>{feature.text}</p><ArrowRight size={19} className="sn-feature-arrow"/></button>})}</div>
         </section>
         <section className="sn-section sn-section-worlds"><div className="sn-section-head"><div><span className="sn-eyebrow"><Orbit size={15}/> INTERACTIVE LEARNING WORLDS</span><h2>Pick your curiosity.</h2></div><button type="button" onClick={()=>go("library")} className="sn-inline-link">All lessons <ArrowRight size={17}/></button></div>
           <div className="sn-lesson-grid">{LESSONS.map((item)=><LessonCard key={item.id} lesson={item} onClick={()=>chooseLesson(item.id)} progress={currentLessonMap[item.id]||0}/>)}</div>
         </section>
-        <section className="sn-bottom-cta"><div className="sn-cta-aura"/><div className="sn-cta-symbol"><SnappyLogo compact/></div><span className="sn-eyebrow">YOUR FIRST DISCOVERY IS ONE CLICK AWAY</span><h2>Ready for your<br/><em>aha moment?</em></h2><p>Try a lesson with your mouse first. Turn on your camera when you're ready.</p><button type="button" className="sn-btn-primary" onClick={()=>go("studio")}>Launch the studio <ArrowRight size={18}/></button></section>
+        <section className="sn-bottom-cta"><div className="sn-cta-aura"/><div className="sn-cta-symbol"><SnappyLogo compact/></div><span className="sn-eyebrow">YOUR FIRST DISCOVERY IS ONE CLICK AWAY</span><h2>Ready for your<br/><em>aha moment?</em></h2><p>Try a lesson with your mouse first. Turn on your camera when you&apos;re ready.</p><button type="button" className="sn-btn-primary" onClick={()=>go("studio")}>Launch the studio <ArrowRight size={18}/></button></section>
       </>}
 
       {screen==="studio"&&<div className="sn-workspace sn-reveal">
@@ -256,7 +260,7 @@ export default function SnappyApp() {
           </div>
           <aside className="sn-assistant-panel">
             <div className="sn-assistant-header"><span className="sn-assistant-avatar"><Sparkles size={23}/></span><div><strong>Ask Snappy</strong><span>Your learning companion</span></div><span className="sn-assistant-status">● READY</span></div>
-            <div className="sn-assistant-body"><span className="sn-eyebrow">YOU'RE EXPLORING</span><h2>{chosen.label}</h2><span className="sn-assistant-summary">{chosen.summary}</span><p>{explanation||chosen.detail}</p>
+            <div className="sn-assistant-body"><span className="sn-eyebrow">YOU&apos;RE EXPLORING</span><h2>{chosen.label}</h2><span className="sn-assistant-summary">{chosen.summary}</span><p>{explanation||chosen.detail}</p>
               {aiError && <div className="sn-ai-error" role="alert">{aiError}</div>}
               {voiceNote && <div className="sn-assistant-command"><Mic2 size={14}/> {voiceNote}</div>}
               <div className="sn-think-card"><span><Lightbulb size={17}/> THINK ABOUT IT</span><p>{chosen.question}</p></div>
@@ -270,7 +274,7 @@ export default function SnappyApp() {
 
       {screen==="library"&&<section className="sn-library-page sn-reveal"><span className="sn-eyebrow"><BookOpen size={15}/> THE LEARNING LIBRARY</span><h1>Explore something <em>new.</em></h1><p>Each world is designed to turn abstract ideas into concepts you can point at, select, and understand.</p><div className="sn-lesson-grid sn-library-grid">{LESSONS.map((item)=><LessonCard key={item.id} lesson={item} onClick={()=>chooseLesson(item.id)} progress={currentLessonMap[item.id]||0}/>)}</div><div className="sn-library-note"><WandSparkles size={21}/><div><strong>Built for how people actually learn.</strong><p>Start with visual interaction. Follow up by asking questions, explaining back, and revisiting the concepts you missed.</p></div><button type="button" onClick={()=>go("studio")}>Open studio <ArrowRight size={15}/></button></div></section>}
 
-      {screen==="progress"&&<section className="sn-progress-page sn-reveal"><span className="sn-eyebrow"><GraduationCap size={16}/> YOUR LEARNING JOURNEY</span><h1>Every discovery <em>counts.</em></h1><p>Track which concepts you've opened. Your progress is saved in this browser.</p><div className="sn-progress-summary"><div className="sn-huge-progress">{progress}<span>%</span></div><div><strong>{explored.length} / {TOTAL_CONCEPTS} concepts explored</strong><p>Progress reflects concepts selected, not mastery or test scores.</p><div className="sn-progress-bar"><span style={{width:progress+"%"}}/></div></div></div><div className="sn-progress-list">{LESSONS.map((item)=><button type="button" key={item.id} onClick={()=>chooseLesson(item.id)}><span className="sn-progress-icon" style={{background:item.accent}}><Check size={18}/></span><span className="sn-progress-text"><strong>{item.title}</strong><small>{exploredFor(item.id)} of {item.concepts.length} explored</small></span><span className="sn-progress-mini"><span style={{width:(exploredFor(item.id)/item.concepts.length*100)+"%"}}/></span><ArrowRight size={17}/></button>)}</div><button type="button" className="sn-reset-progress" onClick={()=>{if(window.confirm("Reset your Snappy discovery progress on this browser?"))setExplored([])}}>Reset discovery progress</button></section>}
+      {screen==="progress"&&<section className="sn-progress-page sn-reveal"><span className="sn-eyebrow"><GraduationCap size={16}/> YOUR LEARNING JOURNEY</span><h1>Every discovery <em>counts.</em></h1><p>Track which concepts you&apos;ve opened. Your progress is saved in this browser.</p><div className="sn-progress-summary"><div className="sn-huge-progress">{progress}<span>%</span></div><div><strong>{explored.length} / {TOTAL_CONCEPTS} concepts explored</strong><p>Progress reflects concepts selected, not mastery or test scores.</p><div className="sn-progress-bar"><span style={{width:progress+"%"}}/></div></div></div><div className="sn-progress-list">{LESSONS.map((item)=><button type="button" key={item.id} onClick={()=>chooseLesson(item.id)}><span className="sn-progress-icon" style={{background:item.accent}}><Check size={18}/></span><span className="sn-progress-text"><strong>{item.title}</strong><small>{exploredFor(item.id)} of {item.concepts.length} explored</small></span><span className="sn-progress-mini"><span style={{width:(exploredFor(item.id)/item.concepts.length*100)+"%"}}/></span><ArrowRight size={17}/></button>)}</div><button type="button" className="sn-reset-progress" onClick={()=>{if(window.confirm("Reset your Snappy discovery progress on this browser?"))setExplored([])}}>Reset discovery progress</button></section>}
     </main>
     <footer className="sn-footer"><div><SnappyLogo/><span>Make learning stick.</span></div><p>Snappy is the next chapter after SnapPlan. <Link href="/planner">Original planner</Link> remains available.</p><span>DESIGNED TO DISCOVER © 2026</span></footer>
   </div>

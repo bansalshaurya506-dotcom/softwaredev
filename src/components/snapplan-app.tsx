@@ -120,21 +120,25 @@ export default function SnapPlanApp() {
   const uploadRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    try {
-      const existing = localStorage.getItem(STORAGE_KEY)
-      if (existing) {
-        const parsed: unknown = JSON.parse(existing)
-        setTasks(Array.isArray(parsed) ? parsed as Assignment[] : sampleAssignments())
-      } else setTasks(sampleAssignments())
-    } catch { setTasks(sampleAssignments()) }
-    setLoaded(true)
+    queueMicrotask(() => {
+      try {
+        const existing = localStorage.getItem(STORAGE_KEY)
+        if (existing) {
+          const parsed: unknown = JSON.parse(existing)
+          setTasks(Array.isArray(parsed) ? parsed as Assignment[] : sampleAssignments())
+        } else setTasks(sampleAssignments())
+      } catch { setTasks(sampleAssignments()) }
+      setLoaded(true)
+    })
   }, [])
   useEffect(() => { if (loaded) localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks)) }, [tasks, loaded])
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem("snapplan-v1-theme")
-      if (stored === "aurora" || stored === "ocean" || stored === "sunset") setTheme(stored)
-    } catch { /* Private browsing may disable storage. */ }
+    queueMicrotask(() => {
+      try {
+        const stored = localStorage.getItem("snapplan-v1-theme")
+        if (stored === "aurora" || stored === "ocean" || stored === "sunset") setTheme(stored)
+      } catch { /* Private browsing may disable storage. */ }
+    })
   }, [])
   useEffect(() => {
     if (!loaded) return
