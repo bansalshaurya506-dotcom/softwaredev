@@ -1,5 +1,5 @@
-import SnapPlanApp from "@/components/snapplan-app"
+import SnappyApp from "@/components/snappy-app"
 
 export default function Home() {
-  return <SnapPlanApp />
+  return <SnappyApp />
 }

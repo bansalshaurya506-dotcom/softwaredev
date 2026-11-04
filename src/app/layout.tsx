@@ -3,10 +3,11 @@ import "./globals.css"
 import "./glass.css"
 import "./snapplan-logo.css"
 import "./design-system.css"
+import "./snappy.css"
 
 export const metadata: Metadata = {
-  title: "SnapPlan | Scan. Organize. Focus. Learn.",
-  description: "An interactive student study planner that turns assignment chaos into a clear plan.",
+  title: "Snappy | Learn with movement",
+  description: "A visual learning studio that lets you explore science with gestures, camera hand tracking, voice commands, and interactive diagrams. Formerly SnapPlan.",
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
