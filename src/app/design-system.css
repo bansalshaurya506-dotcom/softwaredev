@@ -1,0 +1,156 @@
+/* SnapPlan visual system: palettes inspired by color exploration in Coolors.
+   Components and keyboard interactions take cues from shadcn/ui patterns.
+   All colors are authored here; no third-party skill code is installed. */
+.snapplan-shell {
+  --sp-bg:#f6f5fc;
+  --sp-accent:#4e46c9;
+  --sp-soft:#eeebff;
+  --sp-surface:#fff;
+  --sp-ink:#1e234a;
+  --sp-hero1:#131a43;
+  --sp-hero2:#342170;
+  --sp-glow:#7c6be8;
+  min-height:100vh;
+  background:var(--sp-bg);
+  transition:background .28s ease;
+}
+.snapplan-shell[data-snapplan-theme="ocean"] {
+  --sp-bg:#f3f9fa;
+  --sp-accent:#086878;
+  --sp-soft:#def5f4;
+  --sp-surface:#fff;
+  --sp-ink:#102f39;
+  --sp-hero1:#092b39;
+  --sp-hero2:#0b5964;
+  --sp-glow:#35c8be;
+}
+.snapplan-shell[data-snapplan-theme="sunset"] {
+  --sp-bg:#fff8f1;
+  --sp-accent:#a74920;
+  --sp-soft:#ffead8;
+  --sp-surface:#fff;
+  --sp-ink:#402219;
+  --sp-hero1:#472638;
+  --sp-hero2:#914b39;
+  --sp-glow:#ffbb7e;
+}
+.snapplan-shell .btn-primary { background:var(--sp-accent); }
+.snapplan-shell .btn-primary:hover { filter:brightness(.92); }
+.snapplan-shell .btn-soft { color:var(--sp-accent); background:var(--sp-soft); }
+.snapplan-shell .surface-card { border-color:color-mix(in srgb, var(--sp-accent) 10%, #e7e9ef); }
+.snapplan-shell .text-indigo-600,
+.snapplan-shell .text-indigo-700 { color:var(--sp-accent); }
+.snapplan-shell .bg-indigo-50 { background-color:var(--sp-soft); }
+.snapplan-shell .border-indigo-500 { border-color:var(--sp-accent); }
+.snapplan-shell .sp-theme-heading { color:var(--sp-ink); }
+
+/* Hero and the "one clear next step" learning interaction */
+.sp-compass {
+  position:relative;display:grid;grid-template-columns:minmax(0,1.55fr) minmax(225px,.68fr);
+  gap:0;overflow:hidden;border-radius:27px;
+  color:white;background:linear-gradient(112deg,var(--sp-hero1),var(--sp-hero2));
+  box-shadow:0 22px 54px -38px var(--sp-glow);
+  isolation:isolate;
+}
+.sp-compass-background {
+  position:absolute;inset:0;z-index:-1;
+  background:radial-gradient(ellipse at 78% 3%,color-mix(in srgb,var(--sp-glow) 35%,transparent),transparent 45%),
+  radial-gradient(circle at 14% 105%,#40ded422,transparent 44%);
+  pointer-events:none;
+}
+.sp-compass-main { padding:30px 33px 30px;min-width:0; }
+.sp-compass-eyebrow { display:flex;align-items:center;gap:8px;font-size:10px;letter-spacing:.17em;font-weight:800;color:#b9e9f6; }
+.sp-pulse-dot { width:6px;height:6px;border-radius:50%;background:#54f0d3;box-shadow:0 0 11px #54f0d3;animation:sp-pulse 2.2s ease-in-out infinite; }
+.sp-compass-heading { font-size:clamp(22px,2.2vw,31px);font-weight:850;line-height:1.12;letter-spacing:-.045em;margin-top:14px;max-width:530px; }
+.sp-compass-heading span { color:#b4affd; }
+.sp-compass-subtitle { font-size:12px;line-height:1.75;color:#c7d4ee;margin-top:10px;max-width:480px; }
+.sp-lens-wrap { display:flex;flex-wrap:wrap;gap:7px;margin-top:20px; }
+.sp-lens-button {padding:7px 11px;border:1px solid #ffffff2c;border-radius:10px;color:#e1e8fb;font-size:11px;font-weight:750;background:#ffffff09;transition:.15s ease;}
+.sp-lens-button:hover { background:#ffffff21; }
+.sp-lens-active { color:#172649;background:#fff;border-color:#fff; }
+.sp-lens-active:hover { background:#fff; }
+.sp-mission-card { margin-top:16px;padding:19px 20px;background:#ffffffed;color:#25314b;border:1px solid #ffffffa6;border-radius:20px;box-shadow:0 10px 30px #070e2525; }
+.sp-mission-label {display:flex;align-items:center;gap:6px;color:var(--sp-accent);font-size:10px;font-weight:850;letter-spacing:.105em;}
+.sp-mission-due { margin-left:auto;letter-spacing:0;background:var(--sp-soft);color:var(--sp-accent);padding:4px 7px;border-radius:7px;white-space:nowrap; }
+.sp-mission-title { font-size:17px;font-weight:850;line-height:1.4;letter-spacing:-.025em;margin-top:8px; }
+.sp-mission-meta { display:flex;align-items:center;flex-wrap:wrap;gap:7px;color:#647188;font-size:12px;margin-top:5px; }
+.sp-mission-why { display:flex;align-items:flex-start;gap:10px;margin-top:14px;padding:12px;background:#f5f7fc;border-radius:12px;color:#4f5e77;font-size:12px;line-height:1.5; }
+.sp-mission-why svg { color:var(--sp-accent);flex-shrink:0;margin-top:1px; }
+.sp-mission-why strong { color:#24314e; }
+.sp-mission-actions {display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:15px;}
+.sp-action-main {display:inline-flex;align-items:center;gap:7px;background:var(--sp-accent);color:white;border-radius:11px;padding:11px 13px;font-size:12px;font-weight:800;}
+.sp-action-main:hover { filter:brightness(.92); }
+.sp-action-sub {display:inline-flex;align-items:center;gap:7px;border:1px solid #dce2ee;color:#4e5b76;border-radius:11px;padding:10px 12px;font-size:12px;font-weight:700;}
+.sp-action-sub:hover { background:#f5f6fa; }
+.sp-compass-side {display:flex;align-items:center;flex-direction:column;justify-content:center;padding:29px 20px 30px;border-left:1px solid #ffffff16;background:#ffffff08;}
+.sp-ring-shell {width:min(185px,100%);height:185px;display:grid;place-items:center;position:relative;}
+.sp-ring-shell:before {content:"";position:absolute;inset:5px;border:1px solid #ffffff23;border-radius:50%;}
+.sp-progress-ring {width:160px;height:160px;max-width:100%;}
+.sp-side-score {display:flex;flex-direction:column;align-items:center;gap:4px;margin-top:6px;}
+.sp-side-score strong {font-size:16px;letter-spacing:-.025em;}
+.sp-side-score span {font-size:11px;color:#c2cce7;}
+.sp-side-divider {width:85%;height:1px;background:#ffffff23;margin:20px 0;}
+.sp-side-tip {display:flex;align-items:center;gap:8px;color:#b8f3e1;font-weight:750;font-size:11px;}
+.sp-side-link {display:flex;align-items:center;gap:6px;color:white;font-weight:800;font-size:11px;margin-top:16px;text-decoration:underline;text-underline-offset:3px;}
+
+/* Reflection, a skill-development loop instead of a generic check-off list */
+.sp-section-kicker {display:inline-flex;align-items:center;gap:7px;font-weight:850;letter-spacing:.12em;color:var(--sp-accent);font-size:10px;}
+.sp-accuracy-pill {display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:8px 11px;background:var(--sp-soft);color:var(--sp-accent);font-size:11px;font-weight:800;white-space:nowrap;}
+.sp-reflection-form {padding:18px;background:#f8f9fc;border:1px solid #edf0f6;border-radius:15px;}
+.sp-reflection-visual {padding:18px;background:linear-gradient(135deg,var(--sp-soft),#ffffff);border:1px solid #edf0f6;border-radius:15px;min-height:165px;}
+.sp-compare-estimated {background:#a6a1e9;}
+.sp-compare-actual {background:var(--sp-accent);}
+.sp-empty-chart {display:grid;place-items:center;margin:10px auto 0;width:74px;height:74px;border:2px dashed #b7bbd7;color:var(--sp-accent);background:white;border-radius:21px;transform:rotate(-6deg);}
+
+/* Shadcn-inspired command palette, fully local with zero additional packages */
+.sp-command-trigger {display:inline-flex;align-items:center;gap:9px;min-width:180px;justify-content:flex-start;border:1px solid #e3e6ef;border-radius:12px;background:#f8f9fd;color:#657085;padding:9px 10px;font-size:12px;font-weight:650;}
+.sp-command-trigger:hover {color:var(--sp-accent);border-color:color-mix(in srgb,var(--sp-accent) 40%,#e3e6ef);}
+.sp-command-trigger kbd {display:inline-flex;align-items:center;gap:2px;margin-left:auto;padding:3px 6px;border:1px solid #e3e6ef;background:white;border-radius:5px;font-size:10px;font-weight:800;color:#788198;}
+.sp-command-overlay {position:fixed;inset:0;z-index:90;display:flex;align-items:flex-start;justify-content:center;padding:14vh 14px 30px;background:#10182ba8;backdrop-filter:blur(6px);}
+.sp-command-dialog {width:100%;max-width:535px;background:white;border:1px solid #e9e9f1;border-radius:20px;overflow:hidden;box-shadow:0 25px 90px #060e2340;color:#1e293b;}
+.sp-command-search {display:flex;align-items:center;gap:12px;padding:16px;border-bottom:1px solid #edf0f5;}
+.sp-command-search input {flex:1;min-width:0;border:0;outline:0;background:transparent;color:#1e293b;font-size:14px;}
+.sp-command-search input:focus-visible {outline:0;}
+.sp-command-close {display:grid;place-items:center;padding:5px;border-radius:7px;color:#657085;}
+.sp-command-close:hover {background:#f3f4f8;}
+.sp-command-results {max-height:340px;overflow:auto;padding:9px;}
+.sp-command-heading {padding:10px 13px;color:#8892a6;letter-spacing:.14em;font-size:10px;font-weight:850;}
+.sp-command-item {width:100%;display:flex;align-items:center;gap:13px;padding:10px 12px;border-radius:11px;}
+.sp-command-item-active {background:var(--sp-soft);}
+.sp-command-icon {display:grid;place-items:center;flex-shrink:0;width:37px;height:37px;border:1px solid #e3e7f3;border-radius:11px;color:var(--sp-accent);background:white;}
+.sp-command-item strong {display:block;font-size:13px;font-weight:750;}
+.sp-command-item small {display:block;font-size:11px;color:#7e889a;margin-top:2px;}
+.sp-command-footer {border-top:1px solid #edf0f5;padding:10px 17px;background:#fafbfe;color:#8d98a8;font-size:11px;}
+.sp-command-footer kbd {display:inline-block;border:1px solid #dce1e9;border-radius:4px;background:white;padding:1px 4px;font-size:10px;color:#5f6b80;}
+
+/* Color theme picker */
+.sp-theme-option {position:relative;min-height:130px;border:1px solid #e4e7ed;border-radius:14px;text-align:left;padding:15px;background:#fff;transition:border-color .15s,box-shadow .15s;}
+.sp-theme-option:hover {border-color:var(--sp-accent);}
+.sp-theme-option-active {border:2px solid var(--sp-accent);padding:14px;box-shadow:0 0 0 3px var(--sp-soft);}
+.sp-swatch {width:28px;height:28px;border-radius:10px;border:2px solid #ffffff;box-shadow:0 0 0 1px #00000010;}
+.sp-theme-selected {position:absolute;right:10px;top:10px;color:var(--sp-accent);font-size:10px;font-weight:850;}
+.sp-main-title-accent {color:var(--sp-accent);}
+.sp-dashboard-kicker {display:inline-flex;align-items:center;gap:8px;margin-bottom:14px;color:var(--sp-accent);font-size:11px;font-weight:850;letter-spacing:.1em;text-transform:uppercase;}
+@keyframes sp-pulse {0%,100% {opacity:.4;transform:scale(.75);}50% {opacity:1;transform:scale(1.2);}}
+@media(max-width:900px) {
+  .sp-compass {grid-template-columns:minmax(0,1fr);}
+  .sp-compass-side {border-left:0;border-top:1px solid #ffffff17;flex-direction:row;flex-wrap:wrap;gap:12px;justify-content:center;padding:14px;}
+  .sp-ring-shell {width:90px;height:90px;}
+  .sp-progress-ring {width:82px;height:82px;}
+  .sp-side-divider {width:1px;height:55px;margin:0 5px;}
+  .sp-side-tip {display:none;}
+}
+@media(max-width:530px) {
+  .sp-compass-main {padding:24px 19px;}
+  .sp-mission-card {padding:16px;}
+  .sp-lens-button {flex:1;}
+  .sp-ring-shell {width:70px;height:70px;}
+  .sp-progress-ring {width:64px;height:64px;}
+  .sp-side-link {width:100%;justify-content:center;margin-top:0;}
+  .sp-command-trigger {min-width:0;}
+  .sp-command-trigger kbd {display:none;}
+}
+@media(prefers-reduced-motion:reduce) {
+  .sp-pulse-dot {animation:none;}
+  .snapplan-shell,.sp-lens-button,.sp-theme-option {transition:none;}
+}
