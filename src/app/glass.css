@@ -1,0 +1,31 @@
+
+.snapplan-glass-tile { animation: snapplan-tile-in 3s cubic-bezier(.17,.7,.2,1) forwards; }
+.snapplan-glass-mark { animation: snapplan-mark-in 3s cubic-bezier(.17,.7,.2,1) forwards; }
+.snapplan-glass-flare { animation: snapplan-flare-across 3s ease forwards; }
+.snapplan-glass-loop .snapplan-glass-tile,
+.snapplan-glass-loop .snapplan-glass-mark,
+.snapplan-glass-loop .snapplan-glass-flare { animation-iteration-count: infinite; }
+@keyframes snapplan-tile-in {
+  0% { opacity: 0; transform: scale(.15) rotate(-15deg); border-radius: 50%; }
+  25% { opacity: .98; transform: scale(1.18) rotate(2deg); border-radius: 40%; }
+  48% { opacity: 1; transform: scale(1) rotate(0); border-radius: 26%; }
+  80% { opacity: .95; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.06); }
+}
+@keyframes snapplan-mark-in {
+  0% { opacity: 0; filter: blur(12px); transform: scale(2.3); }
+  24% { opacity: .2; filter: blur(7px); transform: scale(1.55); }
+  55% { opacity: 1; filter: blur(1px); transform: scale(1); }
+  100% { opacity: 1; filter: blur(0); transform: scale(1); }
+}
+@keyframes snapplan-flare-across {
+  0%,32% { opacity: 0; transform: translate(-125px,70px) rotate(-45deg); }
+  52% { opacity: .48; }
+  74% { opacity: 0; transform: translate(150px,-95px) rotate(-45deg); }
+  100% { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .snapplan-glass-tile { animation: none; opacity: .8; }
+  .snapplan-glass-mark { animation: none; opacity: 1; }
+  .snapplan-glass-flare { animation: none; display: none; }
+}
