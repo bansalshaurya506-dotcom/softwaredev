@@ -10,6 +10,7 @@ import {
   WandSparkles, X, AlertTriangle, RotateCcw, Save, Bell
 } from "lucide-react"
 import { SnapPlanBrand } from "@/components/branding/snapplan-brand"
+import { AnimatedSnapPlanLogo } from "@/components/branding/animated-snapplan-logo"
 import {
   type Assignment, type Priority, type StudyBlock, dateKey, daysUntil, dueLabel,
   generateStudyPlan, minutesLabel, prioritySort, sampleAssignments
@@ -264,10 +265,11 @@ export default function SnapPlanApp() {
               {pending.length ? pending.slice(0,5).map((task) => <AssignmentRow key={task.id} task={task} onToggle={toggleTask} onEdit={openEdit} onDelete={deleteTask}/>) : <EmptyState title="All caught up!" description="Your assignments are complete. Add another when you're ready." icon={CheckCircle2} action={<button className="btn-soft" onClick={openNew}>Add assignment</button>}/>}
             </section>
             <div className="space-y-6">
-              <div className="overflow-hidden rounded-[22px] bg-gradient-to-br from-[#565be7] via-[#686af0] to-[#857df8] p-6 text-white shadow-lg shadow-indigo-200/50">
-                <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-white/20"><WandSparkles size={23}/></div>
-                <div className="text-xl font-extrabold">Turn chaos into clarity.</div><p className="mt-2 text-sm leading-relaxed text-indigo-100">Upload a photo of your homework and turn it into an organized task.</p>
-                <button type="button" onClick={() => navigate("Scan assignment")} className="mt-6 inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-bold text-indigo-600 shadow-sm hover:bg-indigo-50"><Camera size={17}/> Scan assignment <ArrowRight size={16}/></button>
+              <div className="relative overflow-hidden rounded-[22px] bg-gradient-to-br from-[#080f2b] via-[#141b49] to-[#28135b] p-5 text-white shadow-lg shadow-indigo-200/50 sm:p-6">
+                <div className="pointer-events-none absolute -left-20 -top-20 h-64 w-64 rounded-full bg-indigo-600/20 blur-3xl"/>
+                <AnimatedSnapPlanLogo compact className="relative z-10" />
+                <div className="relative z-10 mt-3 text-xl font-extrabold">Turn chaos into clarity.</div><p className="relative z-10 mt-2 text-sm leading-relaxed text-indigo-100">Upload a photo of your homework and turn it into an organized task.</p>
+                <button type="button" onClick={() => navigate("Scan assignment")} className="relative z-10 mt-5 inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-bold text-indigo-700 shadow-sm hover:bg-indigo-50"><Camera size={17}/> Scan assignment <ArrowRight size={16}/></button>
               </div>
               <div className="surface-card p-5 sm:p-6"><div className="flex items-center justify-between"><h2 className="font-extrabold">Weekly progress</h2><Badge tint="green">{progress}%</Badge></div><div className="mt-5 h-3 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-400 transition-all" style={{ width: progress + "%" }}/></div><p className="mt-3 text-xs text-slate-500">You&apos;ve finished <strong>{completed}</strong> of <strong>{tasks.length}</strong> assignments. Keep building momentum!</p></div>
             </div>

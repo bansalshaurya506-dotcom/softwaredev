@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import "./globals.css"
 import "./glass.css"
+import "./snapplan-logo.css"
 
 export const metadata: Metadata = {
   title: "SnapPlan | Scan. Organize. Focus. Learn.",
